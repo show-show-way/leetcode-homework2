@@ -1,0 +1,49 @@
+class Solution {
+    public int myAtoi(String s) {
+        if (s == null || s.length() == 0) {
+            return 0; // Base case check
+        }
+        
+        s = s.trim(); // Step 1: Ignore leading whitespaces
+        if (s.length() == 0) {
+            return 0; // Return 0 if string becomes empty after trimming
+        }
+        
+        int sign = 1; // Assume positive sign initially
+        int index = 0;
+        
+        // Step 2: Check for sign
+        if (s.charAt(index) == '-' || s.charAt(index) == '+') {
+            sign = (s.charAt(index) == '-') ? -1 : 1;
+            index++; // Move to the next character
+        }
+        
+        long result = 0; // Use long to avoid overflow during calculation
+        
+        // Step 3: Convert number and avoid non-digit characters
+        while (index < s.length()) {
+            char currentChar = s.charAt(index);
+            if (!Character.isDigit(currentChar)) { // If current character is not a digit, break the loop
+                break;
+            }
+            
+            // Append current digit to result
+            result = result * 10 + (currentChar - '0');
+            
+            // Step 4: Handle overflow and underflow
+            if (sign == 1 && result > Integer.MAX_VALUE) {
+                return Integer.MAX_VALUE;
+            } else if (sign == -1 && (-1) * result < Integer.MIN_VALUE) {
+                return Integer.MIN_VALUE;
+            }
+            
+            index++; // Move to the next character
+        }
+        
+        // Apply sign to the result
+        result *= sign;
+        
+        // Step 5: Return final result, casting long to int since the result is        guaranteed to be within int range at this point
+        return (int) result;
+    }
+}
