@@ -1,0 +1,24 @@
+class Solution {
+    public int characterReplacement(String s, int k) {
+         int[] count = new int[26]; // To keep count of each character in the current window
+    int maxCount = 0; // The count of the most frequent character in the current window
+    int maxLength = 0; // The length of the longest valid substring found so far
+    
+    int left = 0; // Left pointer for the sliding window
+    for (int right = 0; right < s.length(); right++) {
+        maxCount = Math.max(maxCount, ++count[s.charAt(right) - 'A']);
+        
+        // If the current window size minus the count of the most frequent character
+        // is greater than k, it means we need to shrink the window
+        if (right - left + 1 - maxCount > k) {
+            count[s.charAt(left) - 'A']--; // Reduce the count of the leftmost character as we're about to exclude it
+            left++; // Shrink the window from the left
+        }
+        
+        // Calculate the length of the current valid window and update maxLength if necessary
+        maxLength = Math.max(maxLength, right - left + 1);
+    }
+    
+    return maxLength;
+    }
+}
