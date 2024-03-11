@@ -1,0 +1,64 @@
+class Solution {
+    class TrieNode {
+        TrieNode[] children = new TrieNode[26];
+        int index = -1; // To store the index of the word in the list, if it ends here
+        List<Integer> palindromeSuffixIndices = new ArrayList<>(); // To store indices of all words that form a palindrome from here
+    }
+    public List<List<Integer>> palindromePairs(String[] words) {
+         TrieNode root = new TrieNode();
+        // Build the trie
+        for (int i = 0; i < words.length; i++) {
+            addWord(root, words[i], i);
+        }
+        
+        List<List<Integer>> pairs = new ArrayList<>();
+        // Find palindrome pairs
+        for (int i = 0; i < words.length; i++) {
+            search(words, i, root, pairs);
+        }
+        return pairs;
+    }
+    private void addWord(TrieNode root, String word, int index) {
+        TrieNode node = root;
+        for (int i = word.length() - 1; i >= 0; i--) { // Add words in reverse order
+            int j = word.charAt(i) - 'a';
+            
+            if (node.children[j] == null) {
+                node.children[j] = new TrieNode();
+            }
+            if (isPalindrome(word, 0, i)) { // Check if the prefix forms a palindrome
+                node.palindromeSuffixIndices.add(index);
+            }
+            node = node.children[j];
+        }
+        node.index = index; // Mark the end of a word
+        node.palindromeSuffixIndices.add(index); // Add itself as a palindrome
+    }
+    
+    private void search(String[] words, int index, TrieNode root, List<List<Integer>> pairs) {
+        TrieNode node = root;
+        for (int i = 0; i < words[index].length(); i++) {
+            // If the current node marks the end of another word
+            if (node.index >= 0 && node.index != index && isPalindrome(words[index], i, words[index].length() - 1)) {
+                pairs.add(Arrays.asList(index, node.index));
+            }
+            node = node.children[words[index].charAt(i) - 'a'];
+            if (node == null) return; // No further match
+        }
+        // Check for words that are suffixes and form palindromes
+        for (int j : node.palindromeSuffixIndices) {
+            if (index != j) {
+                pairs.add(Arrays.asList(index, j));
+            }
+        }
+    }
+    
+    private boolean isPalindrome(String word, int i, int j) {
+        while (i < j) {
+            if (word.charAt(i++) != word.charAt(j--)) {
+                return false;
+            }
+        }
+        return true;
+    }
+}
